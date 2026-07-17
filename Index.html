@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEALTEC | Catálogo de Informática</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#0a0f1e', 
+              card: '#111827', 
+              accentStart: '#00d4ff', 
+              accentEnd: '#0056b3', 
+              text: '#ffffff', 
+              whatsapp: '#25d366', 
+              sale: '#ef4444' 
+            }
+          },
+          backgroundImage: {
+            'brand-gradient': 'linear-gradient(135deg, #00d4ff 0%, #0056b3 100%)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #00d4ff !important;
+      box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background-color: #0a0f1e; }
+    ::-webkit-scrollbar-thumb { background-color: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background-color: #00d4ff; }
+    
+    @keyframes pulse-whatsapp {
+      0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+    .float-whatsapp {
+      animation: pulse-whatsapp 2s infinite;
+    }
+  </style>
+</head>
+<body class="bg-brand-dark text-brand-text min-h-screen font-sans relative">
+
+  <!-- ================= HEADER ================= -->
+  <header class="border-b border-slate-800 bg-brand-dark/95 backdrop-blur-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      
+      <!-- Enlace del Logo y Texto al Inicio -->
+      <a href="#" class="flex flex-col sm:flex-row items-center justify-center sm:justify-start text-center sm:text-left gap-4 cursor-pointer group select-none" title="Ir al inicio">
+        <div class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center transition-all duration-300">
+          <img src="https://media.discordapp.net/attachments/1527508670496243904/1527508861479550976/Sealtec_logo.png?ex=6a5aeafc&is=6a59997c&hm=6328bfcdab650d028d15817acc69372f563dca80f1dc592908c6b3c7b5d4e268&=&format=webp&quality=lossless&width=538&height=538" alt="SEALTEC Logo" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+        </div>
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-wider text-white">SEAL<span class="text-brand-accentStart">TEC</span></h1>
+          <p class="text-xs text-slate-400 mt-0.5 group-hover:text-slate-200 transition-colors">Soluciones Informáticas</p>
+        </div>
+      </a>
+      
+      <!-- Buscador -->
+      <div class="relative w-full sm:w-80">
+        <input type="text" id="search-input" placeholder="Buscar productos..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 pl-11 text-slate-200 placeholder-slate-500 transition-all text-sm focus:border-brand-accentStart focus:ring-1 focus:ring-brand-accentStart">
+        <i data-lucide="search" class="absolute left-3.5 top-3 text-slate-500 w-5 h-5"></i>
+      </div>
+
+      <!-- Controles de Modo -->
+      <div class="flex items-center gap-3">
+        <a href="#servicios" class="flex items-center gap-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-brand-accentStart border border-brand-accentStart/30 px-4 py-2.5 rounded-lg transition-all">
+          <i data-lucide="headphones" class="w-4 h-4"></i>
+          <span>Servicios TI</span>
+        </a>
+        <button onclick="handleAdminButtonClick()" id="btn-admin-mode" class="flex items-center gap-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 px-4 py-2.5 rounded-lg transition-all">
+          <i data-lucide="key" class="w-4 h-4"></i>
+          <span>Modo Admin: APAGADO</span>
+        </button>
+        <button id="btn-add-product" onclick="openProductModal()" class="hidden flex items-center gap-2 text-xs font-bold bg-brand-gradient text-white px-5 py-2.5 rounded-lg transition-all shadow-lg shadow-brand-accentStart/20 hover:brightness-110">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          Nuevo Producto
+        </button>
+        <button id="btn-add-service" onclick="openServiceModal()" class="hidden flex items-center gap-2 text-xs font-bold bg-brand-gradient text-white px-5 py-2.5 rounded-lg transition-all shadow-lg shadow-brand-accentStart/20 hover:brightness-110">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          Nuevo Servicio
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+
+    <!-- ================= PANEL CONTROL MODO ADMIN ================= -->
+    <div id="admin-indicator" class="hidden mb-6 grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        
+        <!-- Bloque Izquierdo: Estado Admin -->
+        <div class="lg:col-span-3 bg-amber-950/40 border border-amber-500/30 text-amber-300 p-5 rounded-xl flex flex-col justify-center gap-3 shadow-xl">
+          <div class="flex items-start gap-3">
+            <i data-lucide="shield-alert" class="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5"></i>
+            <div>
+              <span class="block font-bold text-white text-sm">Modo Administrador Activo</span>
+              <span class="text-[11px] text-amber-400/80 leading-snug">Catálogo y sistema editables en tiempo real.</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Bloque Derecho: Gestión de Categorías y Usuarios -->
+        <div class="lg:col-span-9 bg-slate-900/60 border border-slate-800 p-5 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-6 shadow-xl">
+          
+          <!-- COLUMNA A: Gestión de Etiquetas -->
+          <div class="flex flex-col gap-2.5 border-b md:border-b-0 md:border-r border-slate-800 pb-5 md:pb-0 md:pr-6">
+            <span class="text-xs font-bold uppercase text-slate-300 tracking-wider flex items-center gap-1.5">
+              <i data-lucide="tags" class="w-3.5 h-3.5 text-brand-accentStart"></i> Añadir Nueva Etiqueta / Ubicación
+            </span>
+            <div class="flex gap-2">
+              <input type="text" id="admin-new-category-input" placeholder="Ej. Sillas Gamer" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-3 py-2 text-white w-full focus:border-brand-accentStart">
+              <button onclick="addNewCategoryFromAdmin()" class="bg-brand-gradient text-slate-950 px-4 py-2 rounded-lg text-xs font-black hover:brightness-110 flex items-center gap-1 shrink-0">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Añadir
+              </button>
+            </div>
+            <div id="admin-categories-list" class="flex flex-wrap gap-1.5 pt-1 max-h-[90px] overflow-y-auto scrollbar-thin"></div>
+          </div>
+
+          <!-- COLUMNA B: Gestión de Usuarios -->
+          <div class="flex flex-col gap-2.5">
+            <span class="text-xs font-bold uppercase text-slate-300 tracking-wider flex items-center gap-1.5">
+              <i data-lucide="users" class="w-3.5 h-3.5 text-brand-accentStart"></i> Usuarios del Sistema
+            </span>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="admin-new-user-input" placeholder="Usuario" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-3 py-2 text-white w-full focus:border-brand-accentStart">
+              <input type="password" id="admin-new-pass-input" placeholder="Contraseña" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-3 py-2 text-white w-full focus:border-brand-accentStart">
+            </div>
+            <button onclick="addNewUserFromAdmin()" class="w-full bg-slate-800 border border-slate-700 hover:bg-slate-700 text-brand-accentStart px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1">
+              <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Registrar Usuario
+            </button>
+            <div id="admin-users-list" class="flex flex-wrap gap-1.5 pt-1 max-h-[60px] overflow-y-auto scrollbar-thin"></div>
+          </div>
+
+        </div>
+    </div>
+
+    <!-- ================= BARRA DE CATEGORÍAS ================= -->
+    <div class="mb-8">
+      <div id="categories-container" class="flex items-center gap-2 overflow-x-auto pb-3 pt-1 scrollbar-thin"></div>
+    </div>
+
+    <!-- ================= GRILLA DE PRODUCTOS ================= -->
+    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+    <!-- Mensaje vacío -->
+    <div id="no-results" class="hidden flex flex-col items-center justify-center py-24 text-slate-600">
+      <i data-lucide="package-open" class="w-20 h-20 mb-5"></i>
+      <p class="text-xl font-semibold">No se encontraron productos en esta ubicación.</p>
+      <p class="text-sm mt-1">Prueba cambiando la etiqueta o agrega un producto a esta categoría desde el Modo Admin.</p>
+    </div>
+
+    <!-- ================= SECCIÓN SERVICIOS TI ================= -->
+    <section id="servicios" class="mt-24 scroll-mt-24">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="inline-block text-[11px] font-black uppercase tracking-widest text-brand-accentStart bg-brand-accentStart/10 border border-brand-accentStart/30 px-3 py-1 rounded-full mb-3">Ingeniería en Soporte TI</span>
+        <h2 class="text-3xl font-extrabold text-white mb-3">Servicios Técnicos SEALTEC</h2>
+        <p class="text-slate-400 text-sm leading-relaxed">Además de nuestro catálogo, ofrecemos soporte técnico especializado a domicilio y para empresas. Cotiza tu servicio directamente por WhatsApp.</p>
+      </div>
+
+      <div id="services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+  </main>
+
+  <!-- ================= BOTÓN FLOTANTE WHATSAPP ================= -->
+  <a id="whatsapp-floating-btn" href="#" target="_blank" class="float-whatsapp fixed bottom-6 right-6 z-40 bg-brand-whatsapp hover:bg-emerald-600 p-4 rounded-full shadow-2xl transition-all hover:scale-110 flex items-center justify-center text-slate-950" title="Chatea con nosotros">
+    <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.458 5.705 1.459h.008c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+
+  <!-- ================= MODALS ADMINISTRATIVOS ================= -->
+  <div id="login-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-brand-card border border-slate-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
+      <div class="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900/50">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="lock" class="w-5 h-5 text-brand-accentStart"></i> Acceso Administrativo
+        </h2>
+        <button onclick="closeLoginModal()" class="text-slate-500 hover:text-white p-1 rounded-full hover:bg-slate-800 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form id="login-form" onsubmit="handleLoginSubmit(event)" class="p-6 space-y-4 text-sm">
+        <div id="login-error" class="hidden text-xs bg-red-950/50 border border-red-500/30 text-red-400 p-3 rounded-lg">Usuario o contraseña incorrectos.</div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Usuario</label>
+          <input type="text" id="login-username" required placeholder="Ingresa tu usuario" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Contraseña</label>
+          <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart">
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+          <button type="button" onclick="closeLoginModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-semibold">Cancelar</button>
+          <button type="submit" class="px-6 py-2 bg-brand-gradient text-slate-950 font-black rounded-lg shadow-lg shadow-brand-accentStart/20 hover:brightness-110">Ingresar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Producto -->
+  <div id="product-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-brand-card border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+      <div class="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900/50">
+        <h2 id="modal-title" class="text-xl font-bold text-white">Gestionar Producto</h2>
+        <button onclick="closeProductModal()" class="text-slate-500 hover:text-white p-1 rounded-full hover:bg-slate-800 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+      <form id="product-form" onsubmit="handleFormSubmit(event)" class="p-6 space-y-5 text-sm">
+        <input type="hidden" id="form-id">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Nombre del Producto</label>
+          <input type="text" id="form-name" required placeholder="Ej. Monitor Gamer 27" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Ubicación / Categoría</label>
+            <div class="relative">
+              <select id="form-category" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart appearance-none cursor-pointer pr-10"></select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Precio Original (S/)</label>
+            <input type="number" step="0.01" id="form-price" required placeholder="Ej. 299.99" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Precio Oferta (S/) <span class="text-slate-500">(Opcional)</span></label>
+          <input type="number" step="0.01" id="form-promo-price" placeholder="Ej. 249.99" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">URL de la Imagen</label>
+          <input type="url" id="form-image" required placeholder="https://ejemplo.com/imagen.jpg" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Descripción Corta</label>
+          <textarea id="form-desc" rows="3" required placeholder="Especificaciones principales..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart resize-none"></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-5 border-t border-slate-800">
+          <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-semibold">Cancelar</button>
+          <button type="submit" class="px-7 py-2.5 bg-brand-gradient text-white rounded-lg font-bold hover:brightness-110">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Servicio -->
+  <div id="service-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-brand-card border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+      <div class="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900/50">
+        <h2 id="service-modal-title" class="text-xl font-bold text-white">Gestionar Servicio</h2>
+        <button onclick="closeServiceModal()" class="text-slate-500 hover:text-white p-1 rounded-full hover:bg-slate-800 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+      <form id="service-form" onsubmit="handleServiceFormSubmit(event)" class="p-6 space-y-5 text-sm">
+        <input type="hidden" id="service-form-id">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Nombre del Servicio</label>
+          <input type="text" id="service-form-name" required placeholder="Ej. Instalación de Cámaras" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Ícono</label>
+          <select id="service-form-icon" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart appearance-none cursor-pointer">
+            <option value="headphones">Soporte / Auriculares</option>
+            <option value="camera">Cámaras</option>
+            <option value="network">Redes</option>
+            <option value="wrench">Mantenimiento</option>
+            <option value="download">Instalación de Software</option>
+            <option value="settings">Configuración</option>
+            <option value="server">Servidor</option>
+            <option value="wifi">WiFi</option>
+            <option value="hard-drive">Almacenamiento</option>
+            <option value="shield-check">Seguridad</option>
+            <option value="monitor">Equipos / PC</option>
+            <option value="cable">Cableado</option>
+            
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Descripción Corta</label>
+          <textarea id="service-form-desc" rows="3" required placeholder="En qué consiste..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-brand-accentStart resize-none"></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-5 border-t border-slate-800">
+          <button type="button" onclick="closeServiceModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-semibold">Cancelar</button>
+          <button type="submit" class="px-7 py-2.5 bg-brand-gradient text-white rounded-lg font-bold hover:brightness-110">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODALES INFORMATIVOS (FOOTER) ================= -->
+  <!-- Modal: La Empresa -->
+  <div id="company-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-brand-card border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+      <div class="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900/50">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <i data-lucide="building-2" class="text-brand-accentStart w-5 h-5"></i> Sobre SEALTEC
+        </h2>
+        <button onclick="closeCompanyModal()" class="text-slate-500 hover:text-white p-1 rounded-full hover:bg-slate-800 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+      <div class="p-6 space-y-4 text-sm text-slate-300 leading-relaxed">
+        <p>En <strong class="text-white">SEALTEC</strong> nos dedicamos a ofrecer soluciones informáticas integrales y hardware tecnológico de la más alta calidad para entusiastas, gamers y empresas.</p>
+        <p>Nuestro compromiso va más allá de la venta de productos informáticos de última generación; proveemos un servicio de soporte técnico especializado, redes y sistemas de seguridad con profesionales altamente capacitados.</p>
+        <div class="pt-4 border-t border-slate-800/60 grid grid-cols-2 gap-4 text-xs">
+          <div>
+            <span class="block font-bold text-brand-accentStart uppercase tracking-wider mb-1">Misión</span>
+            Brindar herramientas tecnológicas confiables y un servicio técnico de excelencia que optimice el ecosistema digital de nuestros clientes.
+          </div>
+          <div>
+            <span class="block font-bold text-brand-accentStart uppercase tracking-wider mb-1">Visión</span>
+            Consolidarnos como el proveedor técnico y catálogo informático referente en la región, destacados por la calidad, innovación y confianza.
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-end">
+        <button onclick="closeCompanyModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-all">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Soporte y Garantía -->
+  <div id="warranty-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-brand-card border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+      <div class="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900/50">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <i data-lucide="shield-check" class="text-brand-accentStart w-5 h-5"></i> Soporte y Garantía SEALTEC
+        </h2>
+        <button onclick="closeWarrantyModal()" class="text-slate-500 hover:text-white p-1 rounded-full hover:bg-slate-800 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+      <div class="p-6 space-y-4 text-sm text-slate-300 leading-relaxed">
+        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-start gap-3">
+          <i data-lucide="clock" class="text-brand-accentStart w-5 h-5 shrink-0 mt-0.5"></i>
+          <div>
+            <h4 class="font-bold text-white mb-1">Garantía Extendida de 6 Meses</h4>
+            <p class="text-xs text-slate-400">Todos nuestros productos de hardware adquiridos y los servicios técnicos especializados realizados por nuestro equipo cuentan con una cobertura total de **6 meses** ante cualquier falla de fábrica o problemas operativos derivados de la instalación.</p>
+          </div>
+        </div>
+        <p>Para hacer válida tu garantía o solicitar asistencia técnica remota/presencial, por favor ten a la mano el comprobante o registro de atención y comunícate directamente con nuestro canal de atención en WhatsApp.</p>
+      </div>
+      <div class="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-end">
+        <button onclick="closeWarrantyModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-all">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-slate-800 mt-24 bg-slate-950 text-slate-400 pt-14 pb-8 text-sm">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
+      
+      <!-- Columna 1: La Empresa -->
+      <div class="flex flex-col gap-4">
+        <h3 class="text-lg font-bold text-white tracking-wide border-b border-slate-800 pb-2">La Empresa</h3>
+        <ul class="space-y-2.5 text-xs">
+          <li>
+            <button onclick="openCompanyModal()" class="flex items-center gap-1.5 hover:text-brand-accentStart transition-colors text-left group">
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-600 group-hover:text-brand-accentStart transition-colors"></i> Nuestra Empresa
+            </button>
+          </li>
+          <li>
+            <a href="#servicios" class="flex items-center gap-1.5 hover:text-brand-accentStart transition-colors group">
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-600 group-hover:text-brand-accentStart transition-colors"></i> Servicios Corporativos
+            </a>
+          </li>
+          <li>
+            <button onclick="openWarrantyModal()" class="flex items-center gap-1.5 hover:text-brand-accentStart transition-colors text-left group">
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-600 group-hover:text-brand-accentStart transition-colors"></i> Soporte y Garantía
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Columna 2: Medios de Pago -->
+      <div class="flex flex-col gap-4">
+        <h3 class="text-lg font-bold text-white tracking-wide border-b border-slate-800 pb-2">Medios de pago</h3>
+        
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-emerald-400 tracking-wider uppercase flex items-center gap-1 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Yape
+          </span>
+          <span class="bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-cyan-400 tracking-wider uppercase flex items-center gap-1 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> Plin
+          </span>
+          <span class="bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-orange-400 tracking-wider uppercase flex items-center gap-1 shadow-sm">BCP</span>
+          <span class="bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-brand-accentStart tracking-wider uppercase flex items-center gap-1 shadow-sm">
+            <i data-lucide="credit-card" class="w-3 h-3"></i> Tarjeta
+          </span>
+          <span class="bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-lg text-[10px] font-black text-amber-400 tracking-wider uppercase flex items-center gap-1 shadow-sm">
+            <i data-lucide="banknote" class="w-3 h-3"></i> Efectivo
+          </span>
+        </div>
+        
+        <p class="text-[11px] text-slate-500 leading-relaxed max-w-xs mt-1">
+          Catálogo autorizado para transacciones electrónicas, transferencias directas y pagos contra entrega con total seguridad.
+        </p>
+      </div>
+
+      <!-- Columna 3: Redes Sociales -->
+      <div class="flex flex-col gap-4">
+        <h3 class="text-lg font-bold text-white tracking-wide border-b border-slate-800 pb-2">Redes sociales</h3>
+        
+        <div class="flex items-center gap-3">
+          <!-- Facebook (Vector SVG Nativo) -->
+          <a href="https://facebook.com" target="_blank" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-brand-gradient hover:text-slate-950 hover:border-transparent transition-all shadow-md" title="Síguenos en Facebook">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+              <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+            </svg>
+          </a>
+          <!-- Instagram (Vector SVG Nativo) -->
+          <a href="https://instagram.com" target="_blank" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-brand-gradient hover:text-slate-950 hover:border-transparent transition-all shadow-md" title="Síguenos en Instagram">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </a>
+          <!-- TikTok (Vector SVG Nativo) -->
+          <a href="https://tiktok.com" target="_blank" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-brand-gradient hover:text-slate-950 hover:border-transparent transition-all shadow-md" title="Síguenos en TikTok">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+              <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.73 4.09 1.13.98 2.64 1.44 4.13 1.51v3.91c-1.24-.03-2.47-.36-3.55-1.01-.7-.44-1.29-1.05-1.72-1.74v5.3c0 2.24-.62 4.49-2.12 6.13-1.63 1.9-4.23 2.87-6.73 2.52-2.82-.4-5.26-2.48-5.96-5.18-.74-2.85.23-6.04 2.52-7.8a6.96 6.96 0 017.2-.6c.02.13.04.26.06.39l-1.41.81a5.03 5.03 0 00-3.57.17c-1.42.63-2.47 2.05-2.58 3.59-.14 1.83.9 3.63 2.59 4.31 1.58.67 3.51.35 4.77-.77.84-.74 1.25-1.84 1.25-2.95V0h.02z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Línea Final Inferior -->
+    <div class="max-w-7xl mx-auto px-4 mt-12 pt-6 border-t border-slate-900/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 opacity-40">
+          <img src="https://media.discordapp.net/attachments/1527508670496243904/1527508861479550976/Sealtec_logo.png?ex=6a5aeafc&is=6a59997c&hm=6328bfcdab650d028d15817acc69372f563dca80f1dc592908c6b3c7b5d4e268&=&format=webp&quality=lossless&width=538&height=538" alt="SEALTEC Logo" class="w-full h-full object-contain">
+        </div>
+        <p>© 2026 SEALTEC. Todos los derechos reservados.</p>
+      </div>
+      <p class="text-slate-700">Desarrollado para Catálogo de Hardware y Soporte TI</p>
+    </div>
+  </footer>
+
+  <!-- ================= JAVASCRIPT ================= -->
+  <script>
+    const WHATSAPP_PHONE = "51967557022"; 
+    const STORAGE_KEY = 'sealtec_catalog_v2';
+    const CATEGORIES_STORAGE_KEY = 'sealtec_categories_v1';
+    const USERS_STORAGE_KEY = 'sealtec_users_v1';
+    
+    const defaultUsers = [{ username: "Se@lTec", pass: "Se@lTec123" }];
+    let SYSTEM_USERS = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)) || defaultUsers;
+    
+    const defaultCategories = ["Todos", "Periféricos", "Monitores", "Componentes", "Laptops", "Accesorios"];
+    let AVAILABLE_CATEGORIES = JSON.parse(localStorage.getItem(CATEGORIES_STORAGE_KEY)) || defaultCategories;
+
+    const defaultProducts = [
+      { id: 1, name: "Teclado Mecánico SEALTEC Pro-RGB", category: "Periféricos", price: 289.90, promoPrice: 249.90, image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=500", description: "Switches blue, iluminación RGB totalmente configurable, layout español." },
+      { id: 2, name: "Mouse Gamer SEALTEC Otter-Grip", category: "Periféricos", price: 145.00, promoPrice: null, image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&q=80&w=500", description: "16000 DPI ajustables, diseño ergonómico, 6 botones programables." }
+    ];
+
+    let products = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultProducts;
+    let isAdminMode = false;
+    let searchQuery = "";
+    let selectedCategory = "Todos";
+
+    const SERVICES_STORAGE_KEY = 'sealtec_services_v1';
+    const defaultServices = [
+      { id: 1, icon: "headphones", name: "Soporte Técnico a Domicilio", description: "Diagnóstico y solución de fallas en PC, laptops e impresoras, presencial o remoto." },
+      { id: 2, icon: "camera", name: "Instalación de Cámaras de Seguridad", description: "Sistemas CCTV e IP con configuración de grabación, monitoreo remoto y app móvil." },
+      { id: 3, icon: "network", name: "Redes y Cableado Estructurado", description: "Instalación y configuración de redes cableadas e inalámbricas para hogar y empresa." }
+    ];
+
+    let services = JSON.parse(localStorage.getItem(SERVICES_STORAGE_KEY)) || defaultServices;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      saveToStorage(); 
+      saveServicesToStorage();
+      saveCategoriesToStorage();
+      saveUsersToStorage();
+      renderCategories();
+      populateFormCategorySelect();
+      renderProducts();
+      renderServices();
+      setupSearch();
+      setupFloatingWhatsapp();
+    });
+
+    function openCompanyModal() {
+      document.getElementById("company-modal").classList.remove("hidden");
+      document.body.classList.add('overflow-hidden');
+    }
+
+    function closeCompanyModal() {
+      document.getElementById("company-modal").classList.add("hidden");
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function openWarrantyModal() {
+      document.getElementById("warranty-modal").classList.remove("hidden");
+      document.body.classList.add('overflow-hidden');
+    }
+
+    function closeWarrantyModal() {
+      document.getElementById("warranty-modal").classList.add("hidden");
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function saveServicesToStorage() { localStorage.setItem(SERVICES_STORAGE_KEY, JSON.stringify(services)); }
+    function saveCategoriesToStorage() { localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(AVAILABLE_CATEGORIES)); }
+    function saveUsersToStorage() { localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(SYSTEM_USERS)); }
+
+    function renderServices() {
+      const grid = document.getElementById("services-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      services.forEach(service => {
+        const waText = `Hola SEALTEC! Quisiera cotizar el siguiente servicio:\n\n*Servicio:* ${service.name}`;
+        const waLink = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(waText)}`;
+
+        const card = document.createElement("div");
+        card.className = "bg-brand-card border border-slate-800 rounded-2xl p-6 flex flex-col hover:border-brand-accentStart/40 transition-all duration-300 shadow-lg";
+        card.innerHTML = `
+          <div class="w-12 h-12 rounded-xl bg-brand-gradient flex items-center justify-center mb-4 shadow-lg shadow-brand-accentStart/20">
+            <i data-lucide="${service.icon}" class="w-6 h-6 text-slate-950"></i>
+          </div>
+          <h3 class="font-bold text-white text-lg mb-2 leading-tight">${service.name}</h3>
+          <p class="text-slate-400 text-xs leading-relaxed mb-5 flex-grow">${service.description}</p>
+          ${isAdminMode
+            ? `<div class="flex gap-2.5">
+                 <button onclick="openServiceModal(${service.id})" class="flex-1 flex items-center justify-center gap-2 p-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl transition-colors border border-slate-700 text-xs font-bold"><i data-lucide="edit-2" class="w-4 h-4"></i> Editar</button>
+                 <button onclick="deleteService(${service.id})" class="flex-1 flex items-center justify-center gap-2 p-2.5 bg-slate-800 hover:bg-brand-sale text-white rounded-xl transition-colors border border-slate-700 text-xs font-bold"><i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar</button>
+               </div>`
+            : `<a href="${waLink}" target="_blank" class="flex items-center justify-center gap-2 bg-brand-whatsapp hover:bg-emerald-600 text-slate-950 font-extrabold text-xs px-4 py-3 rounded-lg transition-colors shadow-md"><i data-lucide="message-circle" class="w-4 h-4"></i> Cotizar por WhatsApp</a>`
+          }
+        `;
+        grid.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(products)); }
+    function setupFloatingWhatsapp() {
+      const generalText = "¡Hola SEALTEC! Me gustaría realizar una consulta sobre sus productos informáticos.";
+      document.getElementById("whatsapp-floating-btn").href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(generalText)}`;
+    }
+
+    function renderCategories() {
+      const container = document.getElementById("categories-container");
+      container.innerHTML = "";
+      AVAILABLE_CATEGORIES.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.textContent = cat;
+        btn.className = selectedCategory === cat 
+          ? "px-5 py-2 text-xs font-bold rounded-full bg-brand-gradient text-slate-950 shadow-md whitespace-nowrap transition-all"
+          : "px-5 py-2 text-xs font-semibold rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 whitespace-nowrap transition-all";
+        btn.onclick = () => { selectedCategory = cat; renderCategories(); renderProducts(); };
+        container.appendChild(btn);
+      });
+    }
+
+    function populateFormCategorySelect() {
+      const select = document.getElementById("form-category");
+      if (!select) return;
+      select.innerHTML = "";
+      AVAILABLE_CATEGORIES.filter(cat => cat.toLowerCase() !== "todos").forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+      });
+    }
+
+    function addNewCategoryFromAdmin() {
+      const input = document.getElementById("admin-new-category-input");
+      const value = input.value.trim();
+      if (!value || AVAILABLE_CATEGORIES.some(cat => cat.toLowerCase() === value.toLowerCase())) return;
+      AVAILABLE_CATEGORIES.push(value);
+      saveCategoriesToStorage();
+      input.value = "";
+      renderCategories();
+      populateFormCategorySelect();
+      renderAdminCategoriesList();
+    }
+
+    function deleteCategoryFromAdmin(categoryName) {
+      if (categoryName.toLowerCase() === "todos") return;
+      if (confirm(`¿Estás seguro de eliminar la etiqueta '${categoryName}'?`)) {
+        AVAILABLE_CATEGORIES = AVAILABLE_CATEGORIES.filter(cat => cat !== categoryName);
+        if (selectedCategory === categoryName) selectedCategory = "Todos";
+        saveCategoriesToStorage();
+        renderCategories();
+        populateFormCategorySelect();
+        renderProducts();
+        renderAdminCategoriesList();
+      }
+    }
+
+    function renderAdminCategoriesList() {
+      const container = document.getElementById("admin-categories-list");
+      if (!container) return;
+      container.innerHTML = "";
+      AVAILABLE_CATEGORIES.forEach(cat => {
+        if (cat.toLowerCase() === "todos") return;
+        const badge = document.createElement("span");
+        badge.className = "inline-flex items-center gap-1 bg-slate-950 border border-slate-800 text-[11px] text-slate-300 px-2.5 py-1 rounded-lg";
+        badge.innerHTML = `${cat}<button onclick="deleteCategoryFromAdmin('${cat}')" class="text-slate-500 hover:text-brand-sale ml-1"><i data-lucide="x" class="w-3 h-3"></i></button>`;
+        container.appendChild(badge);
+      });
+      lucide.createIcons();
+    }
+
+    function addNewUserFromAdmin() {
+      const userInput = document.getElementById("admin-new-user-input");
+      const passInput = document.getElementById("admin-new-pass-input");
+      const uVal = userInput.value.trim();
+      const pVal = passInput.value.trim();
+      if (!uVal || !pVal || SYSTEM_USERS.some(u => u.username.toLowerCase() === uVal.toLowerCase())) return;
+      SYSTEM_USERS.push({ username: uVal, pass: pVal });
+      saveUsersToStorage();
+      userInput.value = ""; passInput.value = "";
+      renderAdminUsersList();
+    }
+
+    function deleteUserFromAdmin(username) {
+      if (username.toLowerCase() === "se@ltec") return;
+      if (confirm(`¿Eliminar al usuario '${username}'?`)) {
+        SYSTEM_USERS = SYSTEM_USERS.filter(u => u.username !== username);
+        saveUsersToStorage();
+        renderAdminUsersList();
+      }
+    }
+
+    function renderAdminUsersList() {
+      const container = document.getElementById("admin-users-list");
+      if (!container) return;
+      container.innerHTML = "";
+      SYSTEM_USERS.forEach(u => {
+        const isRoot = u.username.toLowerCase() === "se@ltec";
+        const badge = document.createElement("span");
+        badge.className = `inline-flex items-center gap-1 border text-[11px] px-2.5 py-1 rounded-lg ${isRoot ? "bg-amber-950/40 border-amber-500/30 text-amber-400" : "bg-slate-950 border-slate-800 text-slate-300"}`;
+        badge.innerHTML = `<i data-lucide="user" class="w-2.5 h-2.5"></i>${u.username}${!isRoot ? `<button onclick="deleteUserFromAdmin('${u.username}')" class="text-slate-500 hover:text-brand-sale ml-1"><i data-lucide="trash" class="w-3 h-3"></i></button>` : '<i data-lucide="shield" class="w-3 h-3 text-amber-500 ml-1"></i>'}`;
+        container.appendChild(badge);
+      });
+      lucide.createIcons();
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById("products-grid");
+      const noResults = document.getElementById("no-results");
+      grid.innerHTML = "";
+
+      const filtered = products.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesSearch && (selectedCategory.toLowerCase() === "todos" || (p.category || "").toLowerCase() === selectedCategory.toLowerCase());
+      });
+
+      if (filtered.length === 0) {
+        grid.classList.add("hidden"); noResults.classList.remove("hidden"); return;
+      }
+      grid.classList.remove("hidden"); noResults.classList.add("hidden");
+
+      filtered.forEach(p => {
+        const priceOrig = parseFloat(p.price);
+        const pricePromo = p.promoPrice ? parseFloat(p.promoPrice) : null;
+        const onSale = pricePromo && pricePromo < priceOrig;
+        const finalPrice = onSale ? pricePromo : priceOrig;
+        const discountPct = onSale ? Math.round(((priceOrig - pricePromo) / priceOrig) * 100) : 0;
+
+        const waText = `Hola SEALTEC! Me interesa comprar:\n\n*Producto:* ${p.name}\n*Precio:* S/ ${finalPrice.toFixed(2)}`;
+        const waLink = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(waText)}`;
+
+        const card = document.createElement("div");
+        card.className = "bg-brand-card border border-slate-800 rounded-2xl overflow-hidden hover:border-brand-accentStart/40 transition-all duration-300 flex flex-col h-full relative group shadow-lg";
+        card.innerHTML = `
+          <div class="relative aspect-[16/10] bg-slate-950 overflow-hidden border-b border-slate-800">
+            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=500'">
+            <div class="absolute top-3 right-3 bg-slate-900/90 text-[10px] text-brand-accentStart font-black px-2.5 py-1 rounded-md border border-slate-700/50 backdrop-blur-sm tracking-wide uppercase">${p.category || 'Hardware'}</div>
+            ${onSale ? `<span class="absolute top-3 left-3 bg-brand-sale text-white text-[10px] uppercase font-black px-3 py-1.5 rounded-lg tracking-widest shadow-md">-${discountPct}%</span>` : ''}
+          </div>
+          <div class="p-5 flex flex-col flex-grow">
+            <h3 class="font-bold text-lg text-white mb-2 leading-tight group-hover:text-brand-accentStart transition-colors">${p.name}</h3>
+            <p class="text-slate-400 text-xs line-clamp-3 mb-4 flex-grow leading-relaxed">${p.description}</p>
+            <div class="flex items-center justify-between pt-4 mt-auto border-t border-slate-800/80">
+              <div class="flex flex-col">
+                ${onSale ? `<span class="text-xs text-slate-500 line-through">S/ ${priceOrig.toFixed(2)}</span><span class="text-2xl font-black text-brand-sale">S/ ${finalPrice.toFixed(2)}</span>` : `<span class="text-2xl font-black text-white">S/ ${priceOrig.toFixed(2)}</span>`}
+              </div>
+              ${isAdminMode 
+                ? `<div class="flex gap-2.5"><button onclick="openProductModal(${p.id})" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl transition-colors border border-slate-700"><i data-lucide="edit-2" class="w-4.5 h-4.5"></i></button><button onclick="deleteProduct(${p.id})" class="p-2.5 bg-slate-800 hover:bg-brand-sale text-white rounded-xl transition-colors border border-slate-700"><i data-lucide="trash-2" class="w-4.5 h-4.5"></i></button></div>`
+                : `<a href="${waLink}" target="_blank" class="flex items-center gap-2 bg-brand-whatsapp hover:bg-emerald-600 text-slate-950 font-extrabold text-xs px-4.5 py-3 rounded-lg transition-colors shadow-md">Comprar</a>`
+              }
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function handleAdminButtonClick() { isAdminMode ? toggleAdminMode(false) : openLoginModal(); }
+    function openLoginModal() { document.getElementById("login-error").classList.add("hidden"); document.getElementById("login-form").reset(); document.getElementById("login-modal").classList.remove("hidden"); document.body.classList.add('overflow-hidden'); }
+    function closeLoginModal() { document.getElementById("login-modal").classList.add("hidden"); document.body.classList.remove('overflow-hidden'); }
+
+    function handleLoginSubmit(event) {
+      event.preventDefault();
+      const user = document.getElementById("login-username").value.trim();
+      const pass = document.getElementById("login-password").value.trim();
+      if (SYSTEM_USERS.some(u => u.username.toLowerCase() === user.toLowerCase() && u.pass === pass)) { toggleAdminMode(true); closeLoginModal(); } 
+      else { document.getElementById("login-error").classList.remove("hidden"); }
+    }
+
+    function toggleAdminMode(state) {
+      isAdminMode = state;
+      const btn = document.getElementById("btn-admin-mode");
+      const addBtn = document.getElementById("btn-add-product");
+      const addServiceBtn = document.getElementById("btn-add-service");
+      const indicator = document.getElementById("admin-indicator");
+
+      if (isAdminMode) {
+        btn.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> <span class="text-emerald-400">Modo Admin: ACTIVO</span>`;
+        addBtn.classList.remove("hidden"); addServiceBtn.classList.remove("hidden"); indicator.classList.remove("hidden");
+        renderAdminCategoriesList(); renderAdminUsersList();
+      } else {
+        btn.innerHTML = `<i data-lucide="key" class="w-4 h-4 text-amber-400"></i> <span class="text-amber-400">Modo Admin: APAGADO</span>`;
+        addBtn.classList.add("hidden"); addServiceBtn.classList.add("hidden"); indicator.classList.add("hidden");
+      }
+      renderProducts(); renderServices();
+    }
+
+    function openProductModal(id = null) {
+      const modal = document.getElementById("product-modal");
+      const form = document.getElementById("product-form");
+      const title = document.getElementById("modal-title");
+      form.reset(); document.getElementById("form-id").value = ""; populateFormCategorySelect();
+
+      if (id) {
+        title.textContent = "Editar Producto SEALTEC";
+        const p = products.find(prod => prod.id === id);
+        if (p) {
+          document.getElementById("form-id").value = p.id;
+          document.getElementById("form-name").value = p.name;
+          document.getElementById("form-category").value = p.category || AVAILABLE_CATEGORIES[1];
+          document.getElementById("form-price").value = p.price;
+          document.getElementById("form-promo-price").value = p.promoPrice || "";
+          document.getElementById("form-image").value = p.image;
+          document.getElementById("form-desc").value = p.description;
+        }
+      } else { title.textContent = "Nuevo Producto SEALTEC"; document.getElementById("form-category").value = AVAILABLE_CATEGORIES[1] || ""; }
+      modal.classList.remove("hidden"); document.body.classList.add('overflow-hidden');
+    }
+
+    function closeProductModal() { document.getElementById("product-modal").classList.add("hidden"); document.body.classList.remove('overflow-hidden'); }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      const id = document.getElementById("form-id").value;
+      const name = document.getElementById("form-name").value;
+      const category = document.getElementById("form-category").value;
+      const price = parseFloat(document.getElementById("form-price").value);
+      const promoInput = document.getElementById("form-promo-price").value;
+      const promoPrice = promoInput !== "" ? parseFloat(promoInput) : null;
+      const image = document.getElementById("form-image").value;
+      const description = document.getElementById("form-desc").value;
+
+      if (id) {
+        const index = products.findIndex(p => p.id == id);
+        if (index !== -1) products[index] = { ...products[index], name, category, price, promoPrice, image, description };
+      } else { products.unshift({ id: Date.now(), name, category, price, promoPrice, image, description }); }
+      saveToStorage(); renderProducts(); closeProductModal();
+    }
+
+    function deleteProduct(id) { if (confirm("¿Estás seguro?")) { products = products.filter(p => p.id !== id); saveToStorage(); renderProducts(); } }
+
+    function openServiceModal(id = null) {
+      const modal = document.getElementById("service-modal");
+      const form = document.getElementById("service-form");
+      const title = document.getElementById("service-modal-title");
+      form.reset(); document.getElementById("service-form-id").value = "";
+
+      if (id) {
+        title.textContent = "Editar Servicio SEALTEC";
+        const s = services.find(serv => serv.id === id);
+        if (s) {
+          document.getElementById("service-form-id").value = s.id;
+          document.getElementById("service-form-name").value = s.name;
+          document.getElementById("service-form-icon").value = s.icon;
+          document.getElementById("service-form-desc").value = s.description;
+        }
+      } else { title.textContent = "Nuevo Servicio SEALTEC"; document.getElementById("service-form-icon").value = "headphones"; }
+      modal.classList.remove("hidden"); document.body.classList.add('overflow-hidden');
+    }
+
+    function closeServiceModal() { document.getElementById("service-modal").classList.add("hidden"); document.body.classList.remove('overflow-hidden'); }
+
+    function handleServiceFormSubmit(event) {
+      event.preventDefault();
+      const id = document.getElementById("service-form-id").value;
+      const name = document.getElementById("service-form-name").value;
+      const icon = document.getElementById("service-form-icon").value;
+      const description = document.getElementById("service-form-desc").value;
+
+      if (id) {
+        const index = services.findIndex(s => s.id == id);
+        if (index !== -1) services[index] = { ...services[index], name, icon, description };
+      } else { services.push({ id: Date.now(), name, icon, description }); }
+      saveServicesToStorage(); renderServices(); closeServiceModal();
+    }
+
+    function deleteService(id) { if (confirm("¿Eliminar este servicio?")) { services = services.filter(s => s.id !== id); saveServicesToStorage(); renderServices(); } }
+    function setupSearch() { document.getElementById("search-input").addEventListener("input", (e) => { searchQuery = e.target.value; renderProducts(); }); }
+  </script>
+</body>
+</html>
